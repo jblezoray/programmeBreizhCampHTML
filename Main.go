@@ -1,8 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io/ioutil"
 	"os"
 	"sort"
 	"strconv"
@@ -11,6 +14,16 @@ import (
 
 const jsonProgramOthersFilename = "program_others.json"
 const jsonProgramFilename = "program.json"
+
+const outputFilename = "output/out.html"
+
+type TalkGroup struct {
+	Talks         []Talk
+	CDay          int
+	CDayMJV       string
+	CStartHour    int
+	CStartMinutes int
+}
 
 type Talk struct {
 	ID          int
@@ -34,6 +47,7 @@ type Talk struct {
 	CDurationHours   int
 	CDurationMinutes int
 	CSpeakers        []string
+	CDescriptionHTML string
 }
 
 type talkSortByDate []Talk
@@ -83,7 +97,32 @@ func main() {
 	parseComputedFields(&talks)
 	sort.Sort(talkSortByDate(talks))
 	printTalks(talks)
-	dumpAsHTML(talks)
+	talksByDateTime := groupByDateTime(talks)
+	htmlData := dumpAsHTML(talksByDateTime)
+	ioutil.WriteFile(outputFilename, []byte(htmlData), 0644)
+}
+
+func groupByDateTime(talks []Talk) []TalkGroup {
+	var talkGroups []TalkGroup
+	var curGroup *TalkGroup
+	for i := range talks {
+		if curGroup == nil || !sameDate(talks[i], *curGroup) {
+			if curGroup != nil {
+				talkGroups = append(talkGroups, *curGroup)
+			}
+			curGroup = &TalkGroup{}
+			curGroup.CDay = talks[i].CDay
+			curGroup.CDayMJV = talks[i].CDayMJV
+			curGroup.CStartHour = talks[i].CStartHour
+			curGroup.CStartMinutes = talks[i].CStartMinutes
+		}
+		curGroup.Talks = append(curGroup.Talks, talks[i])
+	}
+	return talkGroups
+}
+
+func sameDate(a Talk, tg TalkGroup) bool {
+	return a.CDay == tg.CDay && a.CStartHour == tg.CStartHour && a.CStartMinutes == tg.CStartMinutes
 }
 
 func printTalks(talks []Talk) {
@@ -126,6 +165,9 @@ func parseComputedFields(talks *[]Talk) {
 		t.CDurationTotal = (t.CEndHour-t.CStartHour)*60 - t.CStartMinutes + t.CEndMinutes
 		t.CDurationHours = t.CDurationTotal / 60
 		t.CDurationMinutes = t.CDurationTotal % 60
+		t.CDescriptionHTML = "<p class=\"desc\">" + t.Description + "</p>"
+		t.CDescriptionHTML = strings.Replace(t.CDescriptionHTML, "\n", "<br/>", -1)
+		t.CDescriptionHTML = strings.Replace(t.CDescriptionHTML, "<br/><br/>", "</p><p class=\"desc\">", -1)
 
 		// t.CSpeakers
 		speakersSplited := strings.Split(t.Speakers, ",")
@@ -138,6 +180,116 @@ func parseComputedFields(talks *[]Talk) {
 	}
 }
 
-func dumpAsHTML(talks []Talk) {
-	// TODO
+const htmlTemplate = `<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr" lang="fr" dir="ltr">
+<head>
+	<title>Output</title>
+	<meta charset="UTF-8">
+	<style>
+		body {
+			font-family: arial;
+			font-size: 12px;
+		}
+		tr.tableHeader td {
+			font-weight: bold;
+			background-color:#DDDDDD;
+		}
+		td {
+			border:1px solid black;
+			padding: 3px;
+			margin: 0;
+		}
+		table {
+			width: 100%;
+			border-spacing: 0;
+			border-collapse: collapse;
+		}
+		h3 {
+			width: 65%;
+			float: left;
+			margin-top: 20px;
+			margin-left: 20px;
+		}
+		div.facts {
+			text-align: right;
+			width: 30%;
+			margin-top: 20px;
+			float: right;
+		}
+		p.desc {
+			clear: both;
+			margin-top: 0px;
+			margin-left: 40px;
+			margin-bottom: 7px;
+		}
+	</style>
+</head>
+<body>
+
+<h1>Programme</h1>
+<table>
+	<tr class="tableHeader">
+		<td>Durée</td>
+		<td>Lieu</td>
+		<td>Format</td>
+		<td>Titre</td>
+		<td>Speakers</td>
+	</tr>
+	{{range $talkGroup := .}}
+		<tr class="tableHeader">
+			<td colspan="5">
+				{{printf "%s %02d:%02d" .CDayMJV .CStartHour .CStartMinutes}}
+			</td>
+		</tr>
+		{{range $talk := .Talks}}
+			<tr>
+				<td style="white-space: nowrap;">
+					{{printf "%1d:%02d" .CDurationHours .CDurationMinutes}}
+				</td>
+				<td>{{.Venue}}</td>
+				<td>{{.Format}}</td>
+				<td>{{.Name}}</td>
+				<td>
+					{{if not (eq (len .CSpeakers) 0) }}
+						{{index .CSpeakers 0}}
+					{{end}}
+				</td>
+			</tr>
+		{{end}}
+	{{end}}
+</table>
+
+<h1>Détail</h1>
+
+{{range $talkGroup := .}}
+	<hr />
+	<h2>{{printf "%s %02d:%02d" .CDayMJV .CStartHour .CStartMinutes}}</h2>
+	{{range $talk := .Talks}}
+		<h3>{{.Name}}</h3>
+		<div class="facts">
+			[{{.Venue}}]
+			({{printf "%1d:%02d" .CDurationHours .CDurationMinutes}})<br/>
+			<i>{{.CSpeakers}}</i>
+		</div>
+		{{.CDescriptionHTML | unescaped}}
+		<!--{{.Description}}-->
+	{{end}}
+{{end}}
+</body>
+</html>`
+
+func dumpAsHTML(talksByDateTime []TalkGroup) string {
+	t := template.Must(
+		template.
+			New("htmlTemplate").
+			Funcs(template.FuncMap{
+				"unescaped": func(x string) template.HTML {
+					return template.HTML(x)
+				}}).
+			Parse(htmlTemplate))
+	var doc bytes.Buffer
+	err := t.Execute(&doc, talksByDateTime)
+	check(err)
+	// doc.WriteTo(os.Stdout)
+	return doc.String()
 }
