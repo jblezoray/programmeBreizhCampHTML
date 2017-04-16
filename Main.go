@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+const jsonProgramOthersFilename = "program_others.json"
 const jsonProgramFilename = "program.json"
 
 type Talk struct {
@@ -73,9 +74,16 @@ func check(e error) {
 func main() {
 	var talks []Talk
 	readFromFile(&talks, jsonProgramFilename)
+	var talkOthers []Talk
+	readFromFile(&talkOthers, jsonProgramOthersFilename)
+	for i := range talkOthers {
+		talkOther := talkOthers[i]
+		talks = append(talks, talkOther)
+	}
 	parseComputedFields(&talks)
 	sort.Sort(talkSortByDate(talks))
 	printTalks(talks)
+	dumpAsHTML(talks)
 }
 
 func printTalks(talks []Talk) {
@@ -128,4 +136,8 @@ func parseComputedFields(talks *[]Talk) {
 			}
 		}
 	}
+}
+
+func dumpAsHTML(talks []Talk) {
+	// TODO
 }
