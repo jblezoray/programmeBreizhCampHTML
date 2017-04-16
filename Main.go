@@ -12,8 +12,8 @@ import (
 	"strings"
 )
 
-const jsonProgramOthersFilename = "program_others.json"
-const jsonProgramFilename = "program.json"
+const jsonProgramOthersFilename = "input/program_others.json"
+const jsonProgramFilename = "input/program.json"
 
 const outputFilename = "output/out.html"
 
