@@ -151,11 +151,11 @@ func parseComputedFields(talks *[]Talk) {
 	for talkID := range *talks {
 		t = &(*talks)[talkID]
 		t.CDay, _ = strconv.Atoi(t.Event_Start[8:10])
-		if t.CDay == 19 {
+		if t.CDay == 28 {
 			t.CDayMJV = "Me"
-		} else if t.CDay == 20 {
+		} else if t.CDay == 29 {
 			t.CDayMJV = "Je"
-		} else if t.CDay == 21 {
+		} else if t.CDay == 30 {
 			t.CDayMJV = "Ve"
 		}
 		t.CStartHour, _ = strconv.Atoi(t.Event_Start[11:13])

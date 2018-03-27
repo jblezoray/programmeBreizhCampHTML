@@ -1,4 +1,4 @@
-BINARY=BreizhCamp2017programBuilder
+BINARY=BreizhCamp2018programBuilder
 
 BUILD=`date +%Y-%m-%d/%H:%M:%S`
 LDFLAGS=-ldflags "-w -s -X main.Build=${BUILD}"
@@ -9,7 +9,7 @@ build:
 test: build
 	go test -v
 
-testrun: clean build test 
+testrun: clean build test
 	./${BINARY}
 
 install: test
