@@ -15,7 +15,7 @@ import (
 const jsonProgramOthersFilename = "input/program_others.json"
 const jsonProgramFilename = "input/program.json"
 
-const outputFilename = "output/out.html"
+const outputFilename = "index.html"
 
 type TalkGroup struct {
 	Talks         []Talk
@@ -151,11 +151,11 @@ func parseComputedFields(talks *[]Talk) {
 	for talkID := range *talks {
 		t = &(*talks)[talkID]
 		t.CDay, _ = strconv.Atoi(t.Event_Start[8:10])
-		if t.CDay == 28 {
+		if t.CDay == 20 {
 			t.CDayMJV = "Me"
-		} else if t.CDay == 29 {
+		} else if t.CDay == 21 {
 			t.CDayMJV = "Je"
-		} else if t.CDay == 30 {
+		} else if t.CDay == 22 {
 			t.CDayMJV = "Ve"
 		}
 		t.CStartHour, _ = strconv.Atoi(t.Event_Start[11:13])
