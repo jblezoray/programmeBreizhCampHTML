@@ -1,45 +1,54 @@
 [
   {
-    "description": "Keynote d'ouverture",
-    "event_start": "2018-03-29T09:00:00",
-    "event_end": "2018-03-29T10:00:00",
+    "name": "Keynote d'ouverture",
+    "event_start": "2019-03-21T09:00:00",
+    "event_end": "2019-03-21T10:00:00",
     "event_key": "tobedefined",
     "event_type": "Keynote",
     "format": "Keynote",
-    "name": "Keynote d'ouverture",
     "venue": "Amphi C",
-    "speakers": "À définir"
+    "speakers": "Équipe BreizhCamp, Stéphane Bortzmeyer",
+    "video_url": null,
+    "files_url": null,
+    "slides_url": null,
+    "description": "Internet et droits humains, il y a vraiment un rapport ?"
   },
   {
-    "description": "Meet'n Greet",
-    "event_start": "2018-03-29T18:30:00",
-    "event_end": "2018-03-29T20:30:00",
+    "name": "Meet'n Greet",
+    "event_start": "2019-03-21T18:30:00",
+    "event_end": "2019-03-21T20:30:00",
     "event_key": "tobedefined",
     "event_type": "Autre",
     "format": "Party",
-    "name": "Meet'n Greet",
-    "venue": "Hall"
+    "venue": "Hall",
+    "description": "Meet'n Greet"
   },
   {
-    "description": "Keynote d'ouverture",
-    "event_start": "2018-03-30T09:00:00",
-    "event_end": "2018-03-30T10:00:00",
-    "event_key": "tobedefined",
-    "event_type": "Keynote",
-    "format": "Keynote",
     "name": "Keynote d'ouverture",
-    "venue": "Amphi C",
-    "speakers": "À définir"
-  },
-  {
-    "description": "Keynote de cloture",
-    "event_start": "2018-03-30T17:30:00",
-    "event_end": "2018-03-30T18:00:00",
+    "event_start": "2019-03-22T09:00:00",
+    "event_end": "2019-03-22T10:00:00",
     "event_key": "tobedefined",
     "event_type": "Keynote",
     "format": "Keynote",
-    "name": "Keynote de cloture",
     "venue": "Amphi C",
-    "speakers": "À définir"
+    "speakers": "Équipe BreizhCamp, Rayna Stamboliyska",
+    "video_url": null,
+    "files_url": null,
+    "slides_url": null,
+    "description": "La menace fantôme"
+  },
+  {
+    "name": "Keynote de clôture",
+    "event_start": "2019-03-22T17:30:00",
+    "event_end": "2019-03-22T18:00:00",
+    "event_key": "tobedefined",
+    "event_type": "Keynote",
+    "format": "Keynote",
+    "venue": "Amphi C",
+    "speakers": "Équipe BreizhCamp",
+    "video_url": null,
+    "files_url": null,
+    "slides_url": null,
+    "description": "Keynote de clôture"
   }
 ]
